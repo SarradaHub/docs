@@ -15,6 +15,10 @@
 3. Production deploy triggered via workflow dispatch after CAB sign-off.
 
 ## Toolchain
-- GitHub Actions + reusable workflows (`platform/ci`).
+- GitHub Actions + reusable workflows (`platform/ci`). Shared templates:
+  - `rails-service-ci.yaml` for Rails services (pickup-game-manager, saturday_league_football)
+  - `node-monorepo-ci.yaml` for the Turborepo (`sarradabet`)
+  - `react-vite-ci.yaml` for SPA frontends (`saturday_league_football_frontend`)
+  - `contracts.yaml` for producer/consumer contract tests
 - Dependabot updates for Node/Ruby dependencies weekly.
 - Code owners configured per directory to enforce domain ownership.
