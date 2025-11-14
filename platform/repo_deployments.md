@@ -2,10 +2,10 @@
 
 | Service | GitHub Repository | Primary Stack | Hosting / Deployment Target | Current Delivery Notes |
 | --- | --- | --- | --- | --- |
-| Saturday League Football Frontend | https://github.com/LMafra/saturday_league_football_frontend | React + Vite | Vercel (`saturday-league-football-frontend.vercel.app`) | Auto-deploys from `main` (to confirm). Needs env vars `VITE_BASE_URL`, `VITE_EVENT_STREAM_URL`. |
-| Saturday League Football API | https://github.com/LMafra/saturday_league_football | Rails API | (Likely Kamal or custom deployment) | Requires PostgreSQL + Redis; publishes `match.scheduled`. Gateway configs: `EVENT_GATEWAY_URL`, `EVENT_GATEWAY_API_KEY`. |
-| SarradaBet API/Web | https://github.com/LMafra/sarradabet | Node/Express + React (Turborepo) | Render web service (`srv-cvcbu9fnoe9s73calvo0`) + Vercel web front (`sarradabet.vercel.app`) | Render handles API with Supabase Postgres (project `gvoidjhjmidljabjgydb`). Env vars: `DATABASE_URL`, `EVENT_GATEWAY_URL`, `KAFKA_BROKERS`, etc. |
-| Pickup Game Manager | https://github.com/LMafra/pickup-game-manager | Rails 8 | Kamal (per `config/deploy.yml`) | Needs Postgres + Redis; emits `payment.received`. Env: `EVENT_GATEWAY_URL`, `EVENT_GATEWAY_API_KEY`, currency defaults. |
+| Saturday League Football Frontend | https://github.com/SarradaHub/saturday_league_football_frontend | React + Vite | Vercel (`saturday-league-football-frontend.vercel.app`) | Auto-deploys from `main` (to confirm). Needs env vars `VITE_BASE_URL`, `VITE_EVENT_STREAM_URL`. |
+| Saturday League Football API | https://github.com/SarradaHub/saturday_league_football | Rails API | (Likely Kamal or custom deployment) | Requires PostgreSQL + Redis; publishes `match.scheduled`. Gateway configs: `EVENT_GATEWAY_URL`, `EVENT_GATEWAY_API_KEY`. |
+| SarradaBet API/Web | https://github.com/SarradaHub/sarradabet | Node/Express + React (Turborepo) | Render web service (`srv-cvcbu9fnoe9s73calvo0`) + Vercel web front (`sarradabet.vercel.app`) | Render handles API with Supabase Postgres (project `gvoidjhjmidljabjgydb`). Env vars: `DATABASE_URL`, `EVENT_GATEWAY_URL`, `KAFKA_BROKERS`, etc. |
+| Pickup Game Manager | https://github.com/SarradaHub/pickup-game-manager | Rails 8 | Kamal (per `config/deploy.yml`) | Needs Postgres + Redis; emits `payment.received`. Env: `EVENT_GATEWAY_URL`, `EVENT_GATEWAY_API_KEY`, currency defaults. |
 
 ## Hosting Notes
 - **Vercel**: two projects (`sarradabet`, `saturday-league-football-frontend`). Validate GitHub integration, production/main branch mapping, preview permalinks.
