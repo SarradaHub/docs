@@ -4,7 +4,7 @@ Este checklist separa **Backend** e **Frontend** por funcionalidade para facilit
 
 ## Estado Atual do Projeto
 
-**Última atualização:** 26 de Janeiro de 2026
+**Última atualização:** 28 de Janeiro de 2026
 
 ### Sistema de Autenticação
 - ✅ Autenticação implementada via `IdentityServiceClient` (serviço externo)
@@ -24,7 +24,7 @@ Este checklist separa **Backend** e **Frontend** por funcionalidade para facilit
 ### Funcionalidades Pendentes
 - ❌ Regras de negócio (escolha de goleiro, sequência de partidas, substituições)
 - ❌ Montador automático da próxima partida
-- ❌ Editar/Excluir campeonato no frontend (métodos no repository existem, mas faltam componentes UI)
+- ❌ Editar/Excluir rodada no frontend (métodos no repository existem, mas faltam componentes UI)
 - ❌ Botão manual de rebalancear times
 
 ## CRUD Campeonatos
@@ -43,17 +43,28 @@ Este checklist separa **Backend** e **Frontend** por funcionalidade para facilit
 
 - [x] Criar campeonato
 - [x] Listar/visualizar campeonato
-- [ ] Editar campeonato (nome/descrição/limites de jogadores)
-  - **Status:** Pendente - apenas criar e visualizar estão implementados
-  - **Nota:** Métodos `updateChampionship` e `deleteChampionship` já existem no `championshipRepository`, mas faltam os componentes UI
-  - [ ] Criar componente `EditChampionshipModal.tsx`
-  - [ ] Integrar na `ChampionshipDetailsPage.tsx`
-  - [ ] Formulário com campos: nome, descrição, min/max jogadores por time
-- [ ] Excluir campeonato (confirmação + erros)
-  - **Nota:** Método `deleteChampionship` já existe no `championshipRepository`, mas falta o componente UI
-  - [ ] Criar componente `DeleteChampionshipModal.tsx`
-  - [ ] Integrar na `ChampionshipDetailsPage.tsx`
-  - [ ] Validação: verificar se há rodadas/partidas associadas
+- [x] Editar campeonato (nome/descrição/limites de jogadores)
+- [x] Excluir campeonato (confirmação + erros)
+- ⚠️ **Nota:** A exclusão exibe erro quando há rodadas/partidas associadas, mas a validação é feita via resposta do backend.
+
+## CRUD Rodadas
+
+### Backend
+
+- [x] CRUD REST (`rounds`)
+
+### Frontend
+
+- [x] Criar rodada
+- [x] Listar/visualizar rodada
+- [ ] Editar rodada (nome/data)
+  - **Nota:** Método `updateRound` existe no `roundRepository`, mas falta componente UI
+  - [ ] Criar componente `EditRoundModal.tsx`
+  - [ ] Integrar na `RoundDetailsPage.tsx`
+- [ ] Excluir rodada (confirmação + erros)
+  - **Nota:** Método `deleteRound` existe no `roundRepository`, mas falta componente UI
+  - [ ] Criar componente `DeleteRoundModal.tsx`
+  - [ ] Integrar na `RoundDetailsPage.tsx`
 
 ## CRUD Jogador
 
@@ -517,6 +528,8 @@ const { data } = useQuery({
   - UI para atualizar stats (`EditMatchStatsModal.tsx`)
   - Estatísticas da rodada e leaderboards
   - Finalizar partida com cálculo automático de vencedor
+- ✅ **CRUD completo de Campeonatos (frontend)**
+  - Criar, editar, excluir e listar campeonatos
 - ✅ **Auto-balanceamento de Times**
   - `RoundTeamGenerator` implementado
   - Balanceamento automático ao adicionar/remover jogadores
@@ -570,16 +583,16 @@ const { data } = useQuery({
 
 ### 🟡 Prioridade Média (Melhorias de UX e Funcionalidades Importantes)
 
-#### 4. CRUD Completo de Campeonatos
+#### 4. CRUD Completo de Rodadas
 **Status:** Pendente - Apenas criar e visualizar implementados  
-**Impacto:** Médio - Melhora a experiência de gerenciamento de campeonatos
+**Impacto:** Médio - Melhora a experiência de gerenciamento de rodadas
 
-- [ ] Criar `EditChampionshipModal.tsx`
-- [ ] Criar `DeleteChampionshipModal.tsx`
-- [ ] Integrar na `ChampionshipDetailsPage.tsx`
-- [ ] Validação: verificar se há rodadas/partidas associadas antes de excluir
+- [ ] Criar `EditRoundModal.tsx`
+- [ ] Criar `DeleteRoundModal.tsx`
+- [ ] Integrar na `RoundDetailsPage.tsx`
+- [ ] Validação: verificar se há partidas associadas antes de excluir
 
-**Nota:** Métodos `updateChampionship` e `deleteChampionship` já existem no `championshipRepository`
+**Nota:** Métodos `updateRound` e `deleteRound` já existem no `roundRepository`
 
 **Dependências:** Nenhuma  
 **Estimativa:** Baixa
