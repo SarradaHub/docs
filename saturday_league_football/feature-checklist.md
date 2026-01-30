@@ -1,5 +1,7 @@
 # Checklist de funcionalidades — Saturday League Football
 
+> Para tarefas técnicas (arquitetura, testes, performance), veja [Checklist Técnico](checklist.md). Para status detalhado de testes, veja [Test Prioritization](test_prioritization.md).
+
 Este checklist separa **Backend** e **Frontend** por funcionalidade para facilitar planejamento e acompanhamento.
 
 ## Estado Atual do Projeto

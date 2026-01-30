@@ -1,11 +1,13 @@
 # Priorização de Testes - Saturday League Football
 
+> Para funcionalidades do projeto, veja [Feature Checklist](feature-checklist.md). Para tarefas técnicas gerais, veja [Checklist Técnico](checklist.md).
+
 ## Resumo Executivo
 
 **Documento:** Finalizado (Janeiro 2026)
 
 **Status Atual**: ✅ Testes estáveis e passando
-- **Testes executando com sucesso**: 565 exemplos, 0 pendentes ✅
+- **Testes executando com sucesso**: 815 exemplos, 0 falhas, 0 pendentes ✅
 - **Cobertura de linhas**: 87.55% ✅ (meta de 80% atingida)
 - **Cobertura de branches**: 70.03% ✅ (meta de 70% atingida)
 
@@ -17,6 +19,9 @@
 - ✅ **Fase 5**: 100% completo ✅ (melhorias e edge cases)
 
 **Melhorias Recentes**:
+- ✅ **Paralelização de Testes Implementada**: `parallel_tests` configurado e funcionando com Database Cleaner para evitar deadlocks
+- ✅ **Tags de Testes Lentos**: Testes de integração e performance marcados com `:slow` para execução seletiva
+- ✅ **Database Cleaner**: Implementado com estratégia `:truncation` para testes paralelos, evitando deadlocks com counter caches
 - ✅ **Teste pendente resolvido**: `Matches::Finalize` "when team is blank" — implementado com stub de `team_1`/`team_1_id` nil para exercitar o ramo `calculate_goals_for(team.blank?)` (modelo exige times).
 - ✅ **Fase 5 Completada**: RecordNotFound em ChampionshipsController, fallback base_relation em ApplicationController, branches em presenters e MatchPresenter, correções em specs (FindQuery, rounds, api_flow GET).
 - ✅ **Fase 4 Completada**: Todos os componentes de lógica de negócio agora têm testes completos.
@@ -27,7 +32,8 @@
 
 - **Cobertura Total**: 87.55% (1111 de 1269 linhas cobertas) ✅
 - **Cobertura de Branches**: 70.03% (236 de 337 branches cobertas) ✅
-- **Status dos Testes**: 565 exemplos, 0 falhas, 0 pendentes ✅
+- **Status dos Testes**: 815 exemplos, 0 falhas, 0 pendentes ✅
+- **Paralelização**: Configurada e funcionando com `parallel_tests` ✅
 - **Última Atualização**: Janeiro 2026
 
 ## Critérios de Priorização
@@ -578,7 +584,9 @@
 
 - **Meta de Cobertura**: 80% de linhas, 70% de branches
 - **Cobertura Atual**: 87.55% de linhas ✅ (meta atingida), 70.03% de branches ✅ (meta atingida)
-- **Testes**: 565 exemplos, 0 falhas, 0 pendentes ✅
+- **Testes**: 815 exemplos, 0 falhas, 0 pendentes ✅
+- **Paralelização**: Implementada com `parallel_tests` e Database Cleaner ✅
+- **Tags de Testes**: Testes lentos marcados com `:slow` para execução seletiva ✅
 - **Prioridade**: Focar em funcionalidades críticas primeiro (controllers e services)
 - **Estratégia**: Testar em camadas (controllers → services → queries → presenters)
 
@@ -590,6 +598,16 @@ O plano de priorização de testes está **finalizado**. Fases 1–5 concluídas
 
 **Nota:** Fases 1–4 foram concluídas em 2025; Fase 5 e fechamento do plano de priorização em Janeiro 2026.
 
+### Janeiro 2026 - Otimizações de Performance de Testes ✅
+
+- **Paralelização de Testes**: Implementada com `parallel_tests` gem, configurado para executar testes em paralelo
+- **Database Cleaner**: Configurado com estratégia `:truncation` para testes paralelos, evitando deadlocks com counter caches
+- **Tags de Testes Lentos**: Testes de integração e performance marcados com `:slow` para execução seletiva
+  - Executar apenas testes rápidos: `bundle exec rspec --tag '~slow'`
+  - Executar apenas testes lentos: `bundle exec rspec --tag slow`
+- **Docker Support**: Database Cleaner configurado para funcionar em ambientes Docker (workaround para safeguard)
+- **Cobertura**: 87.55% linhas, 70.03% branches ✅ (meta 70% atingida), 815 testes passando ✅
+
 ### Janeiro 2026 - Fase 5 Completada ✅
 
 - **Teste pendente resolvido**: `Matches::Finalize` "when team is blank" — stub de `team_1`/`team_1_id` nil para cobrir `calculate_goals_for(team.blank?)`; 0 pendentes.
@@ -597,7 +615,6 @@ O plano de priorização de testes está **finalizado**. Fases 1–5 concluídas
 - **ApplicationController**: Teste do fallback `base_relation` quando coleção não é Relation nem array de AR
 - **Presenters**: Novos testes em `ChampionshipPresenter` (rounds sem players, um round/player), `PlayerPresenter` (serialized_rounds/stats vazios), `MatchPresenter` (count 0, team_1/2_players, draw)
 - **Specs**: FindQuery spec ajustado para `includes: []`; rounds_controller com `per_page: 100`; api_flow GET com query string (evita bug Rails GET+params+json→POST)
-- **Cobertura**: 87.55% linhas, 70.03% branches ✅ (meta 70% atingida), 565 testes passando
 
 ### Janeiro 2025 - Fase 4 Completada ✅
 
