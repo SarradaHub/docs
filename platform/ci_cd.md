@@ -1,7 +1,10 @@
 # CI/CD Blueprint
 
 ## Pipelines
-- **Contracts** (`platform/ci/workflows/contracts.yaml`): Validates JSON schemas and executes producer/consumer contract tests. All services import this via `workflow_call`.
+- **Contracts** (`.github/workflows/contracts.yaml`): Validates JSON schemas and executes producer/consumer contract tests. All services import this via `workflow_call`.
+- **Rails Service CI** (`.github/workflows/rails-service-ci.yaml`): Comprehensive CI workflow for Rails services including linting (RuboCop), security (Brakeman), quality metrics (RubyCritic), and testing (RSpec with PostgreSQL).
+- **Node Monorepo CI** (`.github/workflows/node-monorepo-ci.yaml`): CI workflow for Node.js monorepos with linting, type checking, building, and testing. Supports Prisma ORM and PostgreSQL with coverage artifacts.
+- **React Vite CI** (`.github/workflows/react-vite-ci.yaml`): CI workflow for React/Vite frontend projects with linting (ESLint), formatting (Prettier), type checking (TypeScript), testing (Vitest), and building.
 - **Tests**: Each repository reuses its native test workflows (RSpec for Rails, Jest/Vitest for Node/React). Ensure coverage reports uploaded to a shared artifact bucket.
 - **Deploy**: Terraform plans run in GitHub Actions using environment protection rules. Production deploys require manual approval from platform + domain owner.
 
@@ -15,10 +18,6 @@
 3. Production deploy triggered via workflow dispatch after CAB sign-off.
 
 ## Toolchain
-- GitHub Actions + reusable workflows (`platform/ci`). Shared templates:
-  - `rails-service-ci.yaml` for Rails services (pickup-game-manager, saturday_league_football)
-  - `node-monorepo-ci.yaml` for the Turborepo (`sarradabet`)
-  - `react-vite-ci.yaml` for SPA frontends (`saturday_league_football_frontend`)
-  - `contracts.yaml` for producer/consumer contract tests
+- GitHub Actions + reusable workflows (`.github/workflows/` in the platform repository).
 - Dependabot updates for Node/Ruby dependencies weekly.
 - Code owners configured per directory to enforce domain ownership.

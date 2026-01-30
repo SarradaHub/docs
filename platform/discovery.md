@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-### Pickup Game Manager (`/home/lmafra/projects/pickup-game-manager`)
+### Pickup Game Manager
 - **Purpose**: Manage pickup sports matches, attendance, and financials with dashboards.
 - **Core Domains**: Athletes, Matches, Payments, Incomes, Expenses, Transaction Categories.
 - **Key Services**: `FinancialSummary.period_summary`, `EquilibriumPoint.calculate_equilibrium_point` for financial analytics.
@@ -12,7 +12,7 @@
 - **Deployment**: Kamal-based container deployment with `.env` configuration.
 - **Observability & QA**: Brakeman, RubyCritic, RuboCop, RSpec suites.
 
-### SarradaBet (`/home/lmafra/projects/sarradabet`)
+### SarradaBet
 - **Purpose**: Mock betting platform with real-time odds, categories, voting, and admin tooling.
 - **Core Domains**: Bets, Odds, Votes, Categories, Admins, AdminActions.
 - **Key Services**:
@@ -24,7 +24,7 @@
 - **Deployment**: GitHub Actions CI/CD, Docker Compose for dev/prod, npm scripts.
 - **Observability & QA**: Winston structured logging, request IDs, Jest/Supertest, Vitest, coverage badges.
 
-### Saturday League Football API (`/home/lmafra/projects/saturday_league_football`)
+### Saturday League Football API
 - **Purpose**: Football league management API handling championships, teams, players, rounds, stats.
 - **Core Domains**: Championships, Teams, Players, Matches, Rounds, PlayerStats.
 - **Key Services**:
@@ -37,7 +37,7 @@
 - **Deployment**: Docker, Procfile for dev servers.
 - **Observability & QA**: Docs highlight need for improved testing; baseline audit notes low coverage and pending tooling.
 
-### Saturday League Football Frontend (`/home/lmafra/projects/saturday_league_football_frontend`)
+### Saturday League Football Frontend
 - **Purpose**: React frontend (Vite template) intended to consume the Saturday League Football API.
 - **Core Domains**: UI components for league dashboards (to be expanded).
 - **Key Services**: React hooks and services under `src/` (currently minimal scaffold).
