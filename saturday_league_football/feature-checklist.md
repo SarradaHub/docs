@@ -4,7 +4,8 @@ Este checklist separa **Backend** e **Frontend** por funcionalidade para facilit
 
 ## Estado Atual do Projeto
 
-**Última atualização:** 28 de Janeiro de 2026
+**Última atualização:** 28 de Janeiro de 2026  
+**Última auditoria completa:** 29 de Janeiro de 2026
 
 ### Sistema de Autenticação
 - ✅ Autenticação implementada via `IdentityServiceClient` (serviço externo)
@@ -13,19 +14,23 @@ Este checklist separa **Backend** e **Frontend** por funcionalidade para facilit
 - ✅ Filtros por administrador implementados em todas as queries (backend)
 - ✅ Autenticação no frontend implementada (`AuthContext`, `ProtectedRoute`, `LoginPage`)
 
-### Funcionalidades Implementadas
-- ✅ CRUD completo para todas as entidades (Campeonatos, Jogadores, Times, Partidas)
-- ✅ Otimização de API (paginação, sparse fieldsets, includes)
-- ✅ Sistema completo de estatísticas (gols, assistências, goleiro)
+### Funcionalidades Implementadas (auditado jan/2026)
+- ✅ CRUD completo para Campeonatos, Jogadores, Times, Partidas (backend + frontend)
+- ✅ Otimização de API: paginação, sparse fieldsets, includes, N+1 detection (Bullet em test)
+- ✅ Sistema completo de estatísticas (gols, assistências, goleiro, vitórias/derrotas/empates)
 - ✅ Finalizar partida com cálculo automático de vencedor
-- ✅ Estatísticas da rodada e leaderboards
+- ✅ Estatísticas da rodada e leaderboards (`RoundStatistics`)
 - ✅ Auto-balanceamento automático de times (`RoundTeamGenerator`)
+- ✅ Specs de performance: response size, pagination meta, latency (gated), API contracts
+- ✅ Documentação de API gerada (`docs/api_reference.md`)
 
-### Funcionalidades Pendentes
-- ❌ Regras de negócio (escolha de goleiro, sequência de partidas, substituições)
-- ❌ Montador automático da próxima partida
-- ❌ Editar/Excluir rodada no frontend (métodos no repository existem, mas faltam componentes UI)
-- ❌ Botão manual de rebalancear times
+### Funcionalidades Pendentes (auditado jan/2026)
+- ❌ Regras de negócio (validação de goleiro, sequência automática de partidas, sistema de substituições)
+- ❌ Montador automático da próxima partida (`NextMatchGenerator`)
+- ❌ Editar/Excluir rodada no frontend (métodos `updateRound`/`deleteRound` existem, faltam modais UI)
+- ❌ Botão manual de rebalancear times (endpoint e UI)
+- ❌ Paginação no frontend (listagens)
+- ❌ Otimizações avançadas (cache HTTP, compression, lazy loading, virtualização)
 
 ## CRUD Campeonatos
 
@@ -36,7 +41,8 @@ Este checklist separa **Backend** e **Frontend** por funcionalidade para facilit
   - [x] Implementar paginação para listagem (`?page=1&per_page=20`)
   - [x] Adicionar sparse fieldsets (`?fields=id,name,description`)
   - [x] Evitar N+1 queries com `includes` apropriados
-  - [x] Retornar apenas campos necessários (não incluir `rounds`, `players` por padrão)
+  - [x] Retornar apenas campos necessários (não incluir `rounds`, `players` por padrão)  
+    ⚠️ **Nota:** `ChampionshipPresenter` verifica `include_rounds`/`include_players` antes de serializar, mas ainda inclui contadores (`rounds_count`, `players_count`) sempre.
   - [x] Adicionar query param `include` para relações opcionais (`?include=rounds,players`)
 
 ### Frontend
@@ -75,7 +81,8 @@ Este checklist separa **Backend** e **Frontend** por funcionalidade para facilit
   - [x] Implementar paginação para listagem (`?page=1&per_page=20`)
   - [x] Adicionar sparse fieldsets (`?fields=id,name,championship_id`)
   - [x] Evitar N+1 queries com `includes` apropriados
-  - [x] Retornar apenas campos básicos por padrão (não incluir `player_stats`, `rounds`, `teams`)
+  - [x] Retornar apenas campos básicos por padrão (não incluir `player_stats`, `rounds`, `teams`)  
+    ⚠️ **Nota:** `PlayerPresenter` sempre serializa `rounds` e `player_stats` (verifica se associações estão loaded). Para filtrar via sparse fieldsets, usar `?fields=id,name` no request.
   - [x] Adicionar query param `include` para relações opcionais (`?include=player_stats,rounds`)
   - [x] Filtrar por `championship_id` quando aplicável
 
@@ -95,7 +102,8 @@ Este checklist separa **Backend** e **Frontend** por funcionalidade para facilit
   - [x] Implementar paginação para listagem (`?page=1&per_page=20`)
   - [x] Adicionar sparse fieldsets (`?fields=id,name,round_id`)
   - [x] Evitar N+1 queries com `includes` apropriados
-  - [x] Retornar apenas campos básicos por padrão (não incluir `players`, `matches`)
+  - [x] Retornar apenas campos básicos por padrão (não incluir `players`, `matches`)  
+    ⚠️ **Nota:** `TeamPresenter` sempre serializa `matches` e `players`. Use sparse fieldsets (`?fields=id,name,round_id`) para limitar o payload.
   - [x] Adicionar query param `include` para relações opcionais (`?include=players,matches`)
   - [x] Filtrar por `round_id` quando aplicável
 
@@ -115,7 +123,8 @@ Este checklist separa **Backend** e **Frontend** por funcionalidade para facilit
   - [x] Implementar paginação para listagem (`?page=1&per_page=20`)
   - [x] Adicionar sparse fieldsets (`?fields=id,name,team_1_id,team_2_id,round_id`)
   - [x] Evitar N+1 queries com `includes` apropriados
-  - [x] Retornar apenas campos básicos por padrão (não incluir `team_1_players`, `team_2_players`, `player_stats`)
+  - [x] Retornar apenas campos básicos por padrão (não incluir `team_1_players`, `team_2_players`, `player_stats`)  
+    ⚠️ **Nota:** `MatchPresenter` sempre inclui `team_1_players`, `team_2_players`, `statistics`, etc. Use sparse fieldsets (`?fields=id,name,round_id`) para reduzir o payload.
   - [x] Adicionar query param `include` para relações opcionais (`?include=teams,players,stats`)
   - [x] Filtrar por `round_id` quando aplicável
 - [x] Finalizar partida
@@ -286,17 +295,23 @@ Este checklist separa **Backend** e **Frontend** por funcionalidade para facilit
 - [ ] Primeira partida: Time 1 × Time 2
 - [ ] Vencedor da primeira partida enfrenta o Time 3
 - [ ] Se Time 3 estiver incompleto, completar com os primeiros jogadores da lista do time perdedor
-- [ ] Em caso de empate, manter em campo o time que já estava atuando
-  - [ ] Exemplo: Se o Time 1 vencer o Time 2 e empatar com o Time 3, o Time 3 jogará a terceira partida contra o Time 2
+- [ ] Em caso de empate, temos três regras:
+  - [ ] Caso seja a primeira partida e só tenha 1 time completo de próximo, terá uma disputa de penalti para definir o vencedor.
+  - [ ] Caso seja as próximas partidas, fica o time que entrou por último
+      - [ ] Exemplo: Se o Time 1 vencer o Time 2 e empatar com o Time 3, o Time 3 jogará a terceira partida contra o Time 2
+  - [ ] Caso tenha mais de 1 time completo de próximo, sai os dois times e entra o de próximo
+      - [ ] Exemplo: Caso o time 1 e o time 2 empatem, o time 3 e o time 4 que jogaram a próxima partida
 - [ ] Time que perder retorna ao final da fila de espera
 
 ### Substituições
 
 **Status:** Não implementado. O sistema não possui lógica para substituições automáticas de jogadores.
 
-- [ ] Se jogador sair durante uma partida, substituir pelo próximo jogador disponível na lista geral
-- [ ] Se jogador sair entre partidas, substituir pelo próximo jogador disponível na lista geral
+- [ ] O jogador pode decidir não jogar mais na rodada. Isso pode acontecer em 2 momentos:
+  - [ ] Se jogador sair durante uma partida, substituir pelo próximo jogador disponível na lista geral
+  - [ ] Se jogador sair entre partidas, substituir pelo próximo jogador disponível na lista geral
 - [ ] Próximo jogador disponível = primeiro jogador do primeiro time que estiver fora de campo
+- [ ] Após realizar a substituição, atualizar os outros times
 
 ### Administrador de Campeonato
 
@@ -380,8 +395,9 @@ Este checklist separa **Backend** e **Frontend** por funcionalidade para facilit
 - [x] **Sparse Fieldsets (Seleção de Campos)**
   - [x] Adicionar query param `fields` para permitir seleção de campos específicos
   - [x] Exemplo: `GET /players?fields=id,name,championship_id`
-  - [x] Validar campos solicitados contra schema
-  - [ ] Documentar campos disponíveis em cada endpoint
+  - [x] Validar campos solicitados contra schema  
+    ⚠️ **Nota:** `SparseFieldsets` faz `slice` dos campos presentes no JSON serializado; não há validação contra um schema formal. Campos inexistentes são ignorados.
+  - [x] Documentar campos disponíveis em cada endpoint (`docs/api_reference.md`, gerado via `rake api_docs:generate`)
 
 - [x] **Include Relations (Carregamento Opcional de Relações)**
   - [x] Adicionar query param `include` para relações opcionais
@@ -490,12 +506,14 @@ const { data } = useQuery({
 
 ### Métricas de Sucesso
 
-- [ ] Reduzir tamanho médio de response em 50-70% (implementado, aguardando métricas)
-- [ ] Reduzir load time de listagens para < 500ms (implementado, aguardando métricas)
-- [ ] Reduzir load time de detalhes para < 300ms (implementado, aguardando métricas)
-- [ ] Eliminar N+1 queries (verificar com Bullet gem)
-- [x] Implementar paginação em todos os endpoints de listagem
-- [ ] Documentar campos disponíveis e includes suportados
+*Verificado em jan/2026 no backend `saturday_league_football`.*
+
+- [x] **Reduzir tamanho médio de response em 50-70%** — Validado via `spec/performance/response_size_spec.rb` (sparse fieldsets vs. response completa).
+- [ ] **Reduzir load time de listagens para < 500ms** — Verificado por `spec/performance/latency_spec.rb` com `PERF_SPECS=1` (não roda no CI).
+- [ ] **Reduzir load time de detalhes para < 300ms** — Verificado por `spec/performance/latency_spec.rb` com `PERF_SPECS=1` (não roda no CI).
+- [x] **Eliminar N+1 queries** — Bullet habilitado em test + hooks no RSpec (`spec/support/bullet.rb`) para falhar em N+1 durante o CI.
+- [x] **Implementar paginação em todos os endpoints de listagem** — `Paginatable` + `render_collection` em: `championships`, `players`, `rounds`, `teams`, `matches`, `player_stats` (index e `by_match`). Cobertura em `spec/performance/pagination_meta_spec.rb`.
+- [x] **Documentar campos disponíveis e includes suportados** — Gerado em `docs/api_reference.md` via `rake api_docs:generate`.
 
 ### Prioridade
 
@@ -504,6 +522,29 @@ const { data } = useQuery({
 ---
 
 ## Priorização de Tarefas
+
+**Última atualização:** 29 de Janeiro de 2026
+
+### Resumo de Prioridades
+
+**🔴 Crítica (2 itens)**
+1. Sequência Automática de Partidas — Define fluxo central do sistema
+2. Validação de Goleiros — Essencial para regras do jogo
+
+**🟠 Alta (1 item)**
+3. Sistema de Substituições — Gerenciar saídas de jogadores
+
+**🟡 Média (2 itens)**
+4. Montador Automático da Próxima Partida — Automatiza processo manual
+5. Botão Manual de Rebalancear Times — Controle adicional sobre balanceamento
+
+**🟢 Baixa (4 itens)**
+6. CRUD Completo de Rodadas — Nice to have, caso de uso raro
+7. Otimizações de Performance Adicionais — Já implementadas as principais
+8. Melhorias de Frontend — UX em listagens grandes
+9. Balanceamento por Habilidade — Funcionalidade avançada
+
+---
 
 ### ✅ Tarefas Concluídas
 
@@ -538,14 +579,33 @@ const { data } = useQuery({
 
 ### 🔴 Prioridade Crítica (Bloqueadores e Essenciais)
 
-#### 1. Regras de Negócio - Validação de Goleiros
+#### 1. Sequência Automática de Partidas
+**Status:** Pendente - Partidas são criadas manualmente  
+**Impacto:** Crítico - Define o fluxo central do sistema e bloqueia outras funcionalidades
+
+- [ ] Organizar partidas na mesma ordem em que os times são criados
+- [ ] Primeira partida: Time 1 × Time 2
+- [ ] Vencedor da primeira partida enfrenta o Time 3
+- [ ] Completar time incompleto com jogadores do time perdedor
+- [ ] Implementar regras de empate:
+  - [ ] Primeira partida com 1 time completo de próximo: disputa de pênalti
+  - [ ] Próximas partidas: mantém time que entrou por último
+  - [ ] Mais de 1 time completo de próximo: ambos saem, próximos entram
+- [ ] Time que perder retorna ao final da fila de espera
+
+**Dependências:** Nenhuma  
+**Estimativa:** Alta  
+**Justificativa:** Bloqueia o item #2 (Montador Automático da Próxima Partida) e é essencial para o funcionamento correto do sistema.
+
+#### 2. Regras de Negócio - Validação de Goleiros
 **Status:** Pendente - Sistema permite marcar goleiros, mas não valida regras  
 **Impacto:** Crítico - Essencial para garantir que as regras do jogo sejam respeitadas
 
 - [ ] Implementar validação: goleiro não pode ser jogador de linha na partida em questão
-- [ ] Permitir que goleiro seja jogador de linha em algum time de fora
-- [ ] Validar que goleiro esteja cadastrado em algum time como jogador de linha
-- [ ] Exemplo: Time 1 (A, B, C, D, E) vs Time 2 (F, G, H, I, J). Goleiro do Time 1 pode ser Jogador K do Time 3 ou Jogador U do Time 5
+- [ ] Permitir que goleiro possa ser jogador de linha em algum time de fora
+- [ ] Goleiro pode estar cadastrado em algum time como jogador de linha ou ser cadastrado apenas como goleiro
+- [ ] Exemplo 1: Time 1 (A, B, C, D, E) vs Time 2 (F, G, H, I, J). Goleiro do Time 1 pode ser Jogador K do Time 3 ou Jogador U do Time 5
+- [ ] Exemplo 2: Time 1 (A, B, C, D, E) vs Time 2 (F, G, H, I, J). Goleiro pode ser jogador Y que só é goleiro, não joga na linha
 
 **Dependências:** Nenhuma  
 **Estimativa:** Média
@@ -553,20 +613,6 @@ const { data } = useQuery({
 ---
 
 ### 🟠 Prioridade Alta (Regras de Negócio Essenciais)
-
-#### 2. Sequência Automática de Partidas
-**Status:** Pendente - Partidas são criadas manualmente  
-**Impacto:** Alto - Essencial para o funcionamento correto do sistema de partidas
-
-- [ ] Organizar partidas na mesma ordem em que os times são criados
-- [ ] Primeira partida: Time 1 × Time 2
-- [ ] Vencedor da primeira partida enfrenta o Time 3
-- [ ] Completar time incompleto com jogadores do time perdedor
-- [ ] Em caso de empate, manter em campo o time que já estava atuando
-- [ ] Time que perder retorna ao final da fila de espera
-
-**Dependências:** Nenhuma  
-**Estimativa:** Alta
 
 #### 3. Sistema de Substituições
 **Status:** Pendente  
@@ -583,21 +629,7 @@ const { data } = useQuery({
 
 ### 🟡 Prioridade Média (Melhorias de UX e Funcionalidades Importantes)
 
-#### 4. CRUD Completo de Rodadas
-**Status:** Pendente - Apenas criar e visualizar implementados  
-**Impacto:** Médio - Melhora a experiência de gerenciamento de rodadas
-
-- [ ] Criar `EditRoundModal.tsx`
-- [ ] Criar `DeleteRoundModal.tsx`
-- [ ] Integrar na `RoundDetailsPage.tsx`
-- [ ] Validação: verificar se há partidas associadas antes de excluir
-
-**Nota:** Métodos `updateRound` e `deleteRound` já existem no `roundRepository`
-
-**Dependências:** Nenhuma  
-**Estimativa:** Baixa
-
-#### 5. Montador Automático da Próxima Partida
+#### 4. Montador Automático da Próxima Partida
 **Status:** Pendente  
 **Impacto:** Médio - Automatiza processo manual, melhora eficiência
 
@@ -607,10 +639,10 @@ const { data } = useQuery({
 - [ ] Modal de confirmação com preview da partida sugerida
 - [ ] Navegar para `MatchDetailsPage` após criação
 
-**Dependências:** Item #2 (Sequência Automática de Partidas)  
+**Dependências:** Item #1 (Sequência Automática de Partidas)  
 **Estimativa:** Média
 
-#### 6. Botão Manual de Rebalancear Times
+#### 5. Botão Manual de Rebalancear Times
 **Status:** Pendente - Auto-balance existe, botão manual pendente  
 **Impacto:** Médio - Útil quando balanceamento automático não atende necessidades específicas
 
@@ -621,11 +653,27 @@ const { data } = useQuery({
 - [ ] Feedback visual do resultado (toast/alert)
 
 **Dependências:** Nenhuma  
-**Estimativa:** Baixa
+**Estimativa:** Baixa  
+**Justificativa:** Auto-balanceamento já funciona automaticamente via `after_commit` em `PlayerRound`. Botão manual é útil mas não essencial.
 
 ---
 
 ### 🟢 Prioridade Baixa (Otimizações e Nice to Have)
+
+#### 6. CRUD Completo de Rodadas
+**Status:** Pendente - Apenas criar e visualizar implementados  
+**Impacto:** Baixo - Melhora a experiência de gerenciamento de rodadas, mas não bloqueia funcionalidades core
+
+- [ ] Criar `EditRoundModal.tsx`
+- [ ] Criar `DeleteRoundModal.tsx`
+- [ ] Integrar na `RoundDetailsPage.tsx`
+- [ ] Validação: verificar se há partidas associadas antes de excluir
+
+**Nota:** Métodos `updateRound` e `deleteRound` já existem no `roundRepository`
+
+**Dependências:** Nenhuma  
+**Estimativa:** Baixa  
+**Justificativa:** Funcionalidade útil mas não essencial; edição/exclusão de rodadas é caso de uso raro após criação.
 
 #### 7. Otimizações de Performance Adicionais
 **Status:** Parcial - Paginação, sparse fieldsets, includes e counter_cache já implementados  
@@ -638,7 +686,8 @@ const { data } = useQuery({
 - [ ] Adicionar headers de performance (`X-Response-Time`, `X-Total-Count`)
 
 **Dependências:** Nenhuma  
-**Estimativa:** Média
+**Estimativa:** Média  
+**Justificativa:** Otimizações já implementadas (paginação, sparse fieldsets, counter_cache, índices, Bullet para N+1) atendem as necessidades atuais. Estas são melhorias incrementais.
 
 #### 8. Melhorias de Frontend
 **Status:** Parcial - Cache e estado já configurados  
@@ -651,7 +700,8 @@ const { data } = useQuery({
 - [ ] Request batching (agrupar múltiplas queries)
 
 **Dependências:** Nenhuma  
-**Estimativa:** Média
+**Estimativa:** Média  
+**Justificativa:** Melhorias de UX, mas listagens atuais são pequenas e não apresentam problemas de performance. Implementar quando houver evidência de necessidade.
 
 #### 9. Balanceamento por Habilidade
 **Status:** Pendente  
@@ -662,7 +712,8 @@ const { data } = useQuery({
 - [ ] Adicionar opção de escolha entre balanceamento simples e por habilidade
 
 **Dependências:** Nenhuma  
-**Estimativa:** Alta
+**Estimativa:** Alta  
+**Justificativa:** Funcionalidade avançada que requer modelagem de dados e algoritmo complexo. Não essencial para o funcionamento básico do sistema.
 
 ---
 
@@ -755,3 +806,35 @@ const { data } = useQuery({
 - Corrigido cálculo de own_goals (own_goals do time 2 contam para time 1)
 - Corrigido tratamento de parâmetros não permitidos no `bulk_update`
 - Adicionado tratamento de erros para arrays vazios ou inválidos
+
+---
+
+## Resumo da Auditoria (29/jan/2026)
+
+### Metodologia
+Validação estática do código (backend + frontend) e specs, sem executar comandos. Checou-se a existência de controllers, queries, presenters, services, modais, páginas, repositórios e specs correspondentes.
+
+### Confirmado (com evidência)
+- CRUD completo em backend: `championships`, `players`, `teams`, `rounds`, `matches`, `player_stats` (controllers, routes, queries, presenters).
+- CRUD completo em frontend: campeonatos (list/create/edit/delete), jogadores (list/create/edit/delete), times (list/create/edit/delete), partidas (list/create/edit/delete/finalize).
+- Autenticação backend: `IdentityAuthentication` concern, token Bearer, `current_user`, filtro por `user_id`.
+- Autenticação frontend: `AuthContext`, `ProtectedRoute`, `LoginPage`, token no interceptor do `BaseService`.
+- Otimização de API: `Paginatable`, `SparseFieldsets`, `Includable` concerns; CollectionQueries com paginação e includes; counter_cache e índices.
+- Estatísticas: `RoundStatistics`, `Matches::Finalize`, `PlayerStats::BulkUpsert`, `EditMatchStatsModal`, `RoundStatisticsSection`.
+- Auto-balanceamento: `RoundTeamGenerator` + callback em `PlayerRound`.
+- Specs de performance: `spec/performance/response_size_spec.rb`, `pagination_meta_spec.rb`, `latency_spec.rb`, `spec/api/contracts/api_contracts_spec.rb`.
+- Bullet habilitado em test com `raise = true`; docs de API em `docs/api_reference.md`.
+
+### Parcial (backend ok, UI pendente ou vice-versa)
+- **CRUD Rodadas (frontend)**: `roundRepository.updateRound`/`deleteRound` existem; faltam `EditRoundModal.tsx`, `DeleteRoundModal.tsx`.
+
+### Não implementado (sem evidência)
+- Regras de negócio: validação de goleiro, sequência automática de partidas, sistema de substituições.
+- Montador automático da próxima partida (`NextMatchGenerator`, endpoint `suggest_next_match`).
+- Botão manual de rebalancear times (endpoint `rebalance_teams`, botão no frontend).
+- Paginação no frontend (listagens grandes), lazy loading, virtualização, request batching.
+- Cache HTTP, response compression, headers de performance (`X-Response-Time`, etc.).
+
+### Ajustes de precisão no checklist
+- Adicionadas notas em "Retornar apenas campos básicos por padrão": presenters sempre serializam relações (use sparse fieldsets para limitar).
+- Nota em "Validar campos solicitados contra schema": apenas filtra campos presentes; não valida contra schema formal.
